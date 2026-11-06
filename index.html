@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opus Bloc: interactive recreation of Home and Markets</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#d9d3c3;--cream:#F5F0E1;--card:#fff;--ink:#1c1c2b;--mut:#7d7a68;--gold:#a8884a;--gold2:#cfc08a;--line:#e6dfca;--green:#5fae83;--black:#0b0b0d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0c0e;--cream:#1a1812;--card:#24211a;--ink:#f1ead6;--mut:#a39e88;--line:#38332a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c0c0e;--cream:#1a1812;--card:#24211a;--ink:#f1ead6;--mut:#a39e88;--line:#38332a;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);display:flex;flex-direction:column;align-items:center;padding:16px 10px 40px;gap:12px}
+.hint{font-size:12.5px;color:var(--mut);text-align:center;max-width:380px}
+.phone{width:390px;max-width:100%;height:780px;background:var(--cream);border-radius:34px;border:8px solid #111;position:relative;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.3)}
+.serif{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;font-size:11px}
+.top{position:absolute;top:0;left:0;right:0;z-index:5;padding:16px 16px 14px;display:flex;align-items:center;gap:12px;background:linear-gradient(#2a3140,var(--cream));background:linear-gradient(180deg,rgba(20,26,40,.9) 0%,var(--cream) 100%)}
+.av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#e3d79d,#a8946a);display:grid;place-items:center;font-weight:700;color:#222}
+.who{flex:1;line-height:1.1}.who .mono{color:#cfd3dc;font-size:10px}.who h1{font-size:22px;color:#fff}
+.ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:transparent;display:grid;place-items:center;color:#d8d2bd;position:relative;cursor:pointer}
+.ib i{position:absolute;top:-5px;right:-5px;background:var(--gold2);color:#222;font:700 10px Manrope;font-style:normal;width:17px;height:17px;border-radius:50%;display:grid;place-items:center}
+svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.scr{position:absolute;inset:0;overflow-y:auto;padding:84px 16px 100px;display:none;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}.scr.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px}
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:0;scrollbar-width:none;border-radius:20px}
+.slides::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:start;padding:22px 24px;height:190px}
+.slide .mono{display:flex;align-items:center;gap:8px;color:var(--mut)}
+.slide .dot{width:14px;height:14px;border-radius:50%;background:#bfe3cf;border:3px solid #7cc6a0}
+.slide b{display:block;font-size:44px;font-weight:700;margin:14px 0 4px}
+.slide span.s{color:var(--mut);font-family:"IBM Plex Mono",monospace;font-size:15px}
+.dots{display:flex;gap:6px;justify-content:center;margin:12px 0 14px}
+.dots i{width:8px;height:8px;border-radius:9px;background:var(--line)}.dots i.on{width:26px;background:var(--gold)}
+.help{display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:26px;cursor:pointer;width:100%;text-align:left;font:inherit;color:inherit}
+.help .ic{width:48px;height:48px;border-radius:14px;border:1px solid var(--gold2);display:grid;place-items:center;color:var(--gold);background:var(--cream)}
+.help p{flex:1;font-size:13.5px;color:var(--mut)}.help p b{display:block;font-size:16px;color:var(--ink)}
+.sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.sh h2{font-size:32px}.sh a{color:var(--gold);font-weight:700;font-size:15px;text-decoration:none}
+.sub{color:var(--mut);font-size:15px;margin-bottom:14px}
+.rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 28px;padding:0 16px}
+.rail::-webkit-scrollbar{display:none}
+.ofr{flex:0 0 300px;height:140px;border-radius:18px;border:1px solid var(--line);overflow:hidden;position:relative;background:linear-gradient(135deg,#fbf3dc,#f0dfae);display:flex;align-items:center;justify-content:center}
+.ofr .t{text-align:center}.ofr .t em{font:italic 600 34px "Cormorant Garamond",Georgia,serif;color:#b0801f;display:block}
+.ofr .t span{display:inline-block;background:#0e1830;color:#e9c46a;border:1px solid #c79a3d;border-radius:12px;padding:6px 12px;font:700 15px Manrope}
+.ofr.w{background:var(--card);flex-basis:230px;display:block;padding:18px;color:var(--ink)}
+.ofr.w h3{font-size:30px;line-height:1.05;margin:8px 0}.ofr.w p{color:var(--mut);font-size:14px}
+.prop{background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--line);margin-bottom:26px}
+.rail .prop{flex:0 0 320px;margin:0}
+.hero{height:150px;background:radial-gradient(circle at 70% 20%,#2a2a2f,#050506 70%);position:relative;display:flex;align-items:center;justify-content:center;gap:12px}
+.logo{width:54px;height:54px;background:linear-gradient(135deg,#e9d89b,#9c8344);display:grid;place-items:center}
+.logo i{width:24px;height:24px;background:#0b0b0d;border:3px solid #e9d89b;display:block}
+.hero b{font:800 34px Manrope;color:#d7c27a;letter-spacing:.01em}
+.tg{position:absolute;left:12px;border:1px solid #333;background:rgba(15,15,18,.85);color:#ddd;border-radius:8px;padding:5px 11px;font:500 11px "IBM Plex Mono",monospace;letter-spacing:.08em}
+.hr{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;background:rgba(20,20,22,.8);border:0;color:#fff;display:grid;place-items:center;cursor:pointer}
+.hr.on svg{fill:#ff6b6b;stroke:#ff6b6b}
+.pb{padding:16px}
+.pt{display:flex;justify-content:space-between;align-items:center;gap:8px}.pt b{font-size:19px}
+.lnd{border:1px solid var(--gold2);background:var(--cream);color:var(--gold);border-radius:99px;padding:6px 16px;font:500 12px "IBM Plex Mono",monospace;letter-spacing:.08em}
+.loc{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:15px;margin:6px 0 14px}.loc svg{width:14px;height:14px}
+.m2{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);background:var(--cream);border-radius:16px;padding:16px}
+.m2>div:first-child{border-right:1px solid var(--line)}.m2>div+div{padding-left:18px}
+.m2 .mono{color:var(--mut);font-size:11px}.m2 b{display:block;font-size:30px;margin-top:8px;font-family:"IBM Plex Mono",monospace;font-weight:500}.m2 .g{color:var(--green)}
+.bar{height:11px;border-radius:9px;background:var(--cream);margin:14px 0 6px;overflow:hidden;border:1px solid var(--line)}.bar i{display:block;width:1%;min-width:18px;height:100%;background:linear-gradient(90deg,#e3d79d,#a8946a)}
+.fd{font:500 13px "IBM Plex Mono",monospace;margin-bottom:12px}
+.row{display:flex;gap:10px}
+.sq{width:56px;height:56px;border-radius:14px;border:1px solid var(--line);background:var(--cream);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.buy{flex:1;height:56px;border:0;border-radius:16px;background:linear-gradient(90deg,#e6dcaa,#a8946a);font:700 17px Manrope;color:#1c1c1c;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.map{height:250px;border-radius:22px;position:relative;overflow:hidden;background:#d7d1c0;border:1px solid var(--line);margin-bottom:12px}
+.map .st{position:absolute;color:#f2efe6;font:500 13px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase}
+.map .shade{position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(transparent,rgba(30,28,25,.9))}
+.map .cap{position:absolute;left:18px;bottom:18px;color:#fff}.map .cap em{font:italic 600 32px "Cormorant Garamond",serif;display:block}.map .cap span{font:12px "IBM Plex Mono",monospace;color:#c9c3ae}
+.map button{position:absolute;right:14px;bottom:16px;background:rgba(60,58,54,.85);border:1px solid #666;color:#fff;border-radius:14px;padding:10px 18px;font:700 15px Manrope;cursor:pointer;display:flex;gap:8px;align-items:center}
+.city{display:flex;gap:10px;align-items:center;padding:12px 16px;margin-bottom:28px;width:fit-content;max-width:100%;font:600 16px Manrope;color:var(--ink);cursor:pointer}
+.news{display:flex;gap:16px;padding:16px;margin-bottom:12px;align-items:center}
+.th{flex:none;width:108px;height:108px;border-radius:16px;background:linear-gradient(135deg,#f6eed0,#e3cf95)}
+.th.b{background:linear-gradient(135deg,#8aa0b8,#2b3a52)}.th.c{background:repeating-linear-gradient(90deg,#9a8f6e 0 8px,#7d7352 8px 16px)}
+.news .mono{color:var(--gold);font-size:11px}.news h3{font-size:22px;line-height:1.2;margin:4px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.news small{font:13px "IBM Plex Mono",monospace;color:var(--mut)}
+.soc{display:flex;gap:14px;justify-content:center;margin:14px 0 20px}.soc .sq{border-radius:50%;width:54px;height:54px}
+.fab{position:absolute;right:16px;bottom:96px;width:62px;height:62px;border-radius:50%;border:0;background:linear-gradient(135deg,#e6dcaa,#a8946a);display:grid;place-items:center;z-index:6;box-shadow:0 10px 22px rgba(0,0,0,.25);cursor:pointer;color:#222}
+.nav{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;padding:10px 8px 16px;background:var(--cream);border-top:1px solid var(--line)}
+.nav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 14px Manrope;color:var(--mut);cursor:pointer}
+.nav button.on{color:var(--gold)}.nav svg{width:26px;height:26px}
+.nav .pa{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#e3d79d,#a8946a);display:grid;place-items:center;font-size:12px;font-weight:700;color:#222}
+.mh{position:absolute;top:0;left:0;right:0;z-index:5;padding:16px;display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,rgba(20,26,40,.9),var(--cream))}
+.mh h1{font-size:34px;color:var(--ink)}.mh .ib{color:var(--ink)}
+.seg{display:flex;border:1px solid var(--line);border-radius:18px;padding:6px;margin-bottom:14px;background:var(--cream)}
+.seg button{flex:1;height:50px;border:0;background:none;border-radius:13px;font:700 17px Manrope;color:var(--mut);cursor:pointer}.seg button sup{font-size:11px}
+.seg button.on{background:linear-gradient(90deg,#e6dcaa,#cdbd85);color:#1c1c1c}
+.sr{display:flex;gap:10px;margin-bottom:14px}.sr label{flex:1;display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:16px;padding:0 14px;height:58px;color:var(--mut);background:var(--cream)}
+.sr input{border:0;background:none;font:16px Manrope;color:var(--ink);width:100%;outline:none}
+.chips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px;padding:0 16px}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--cream);color:var(--ink);border-radius:99px;padding:10px 20px;font:700 16px Manrope;cursor:pointer}
+.chip.on{background:linear-gradient(90deg,#e6dcaa,#cdbd85);border-color:transparent}
+.rs{display:flex;justify-content:space-between;margin-bottom:14px;font:14px "IBM Plex Mono",monospace;color:var(--mut)}.rs button{background:none;border:0;color:var(--gold);font:600 17px Manrope;cursor:pointer}
+.emp{text-align:center;color:var(--mut);padding:60px 20px}
+.toast{position:absolute;left:18px;right:18px;bottom:104px;z-index:9;background:#1c1c24;color:#fff;border-radius:14px;padding:13px 16px;font:600 14px Manrope;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<p class="hint">Interactive recreation of the current app’s Home and Markets. Tap the bottom tabs, offer cards, chips, hearts, sort and Buy now.</p>
+<div class="phone">
+
+<!-- HOME -->
+<section class="scr on" id="home">
+<div class="top"><div class="av">T</div><div class="who"><div class="mono">Good afternoon</div><h1 class="serif">THNKRLOVE29</h1></div>
+<button class="ib" data-t="Coupons and rewards" aria-label="Coupons"><svg viewBox="0 0 24 24"><path d="M3 8h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4zM10 9l4 6"/></svg></button>
+<button class="ib" data-t="1 new notification" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 1 1 12 0v6l1.5 2h-15zM10 21h4"/></svg><i>1</i></button></div>
+
+<div class="card"><div class="slides" id="sl">
+<div class="slide"><div class="mono"><span class="dot"></span>Live properties</div><b class="serif">1</b><span class="s">across 1 cities</span></div>
+<div class="slide"><div class="mono"><span class="dot"></span>Minimum amount</div><b class="serif">₹10K</b><span class="s">to own a fraction</span></div>
+<div class="slide"><div class="mono"><span class="dot"></span>5Y projected returns</div><b class="serif">86%</b><span class="s">on OB Urban Living PG</span></div>
+</div></div>
+<div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>
+
+<button class="card help" data-t="Opens WhatsApp chat"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v5H4zM17 14h3v5h-3zM17 19c0 1.5-2 2-5 2"/></svg></span><p><b>Need help? Chat on WhatsApp</b>Talk to your Account Manager, SANTOSH B</p><svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></button>
+
+<div class="sh"><h2 class="serif">Rewards &amp; Offers</h2><a href="#" data-t="All rewards">See all</a></div>
+<div class="rail" style="margin-top:12px">
+<div class="ofr" data-t="₹500 off applied to your next bloc" style="cursor:pointer"><div class="t"><em>Happy Diwali</em><span>Get ₹500 OFF on your bloc</span></div></div>
+<div class="ofr w" data-t="Zero platform fee on your first bloc" style="cursor:pointer"><div class="mono" style="color:var(--mut)">Offer</div><h3 class="serif">No Platform Fee</h3><p>Zero platform fee on your Bloc purchase.</p></div></div>
+
+<div class="sh"><h2 class="serif">Featured Properties</h2><a href="#" data-t="All properties">See all</a></div>
+<p class="sub">Hot listings and New Bloc’s.</p>
+<div class="prop"><div class="hero"><span class="tg" style="top:12px">HOT</span><div class="logo"><i></i></div><b>OPUS BLOC</b><span class="tg" style="bottom:12px">PRIMARY</span></div>
+<div class="pb"><div class="pt"><b>OB Urban Living PG</b><span class="lnd">LAND</span></div>
+<div class="loc"><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>Vishakhapatnam, Andhra Pradesh</div>
+<div class="m2"><div><div class="mono">Min amount</div><b>₹10K</b></div><div><div class="mono">*5Y projected returns</div><b class="g">86.0%</b></div></div>
+<div class="bar"><i></i></div><div class="fd">1% funded</div>
+<div class="row"><button class="sq" data-t="Share link copied" aria-label="Share"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 11 7.6-4M8.2 13l7.6 4"/></svg></button><button class="buy" data-t="Opens purchase flow">Buy now</button></div></div></div>
+
+<div class="sh"><h2 class="serif">Where You Can Invest</h2><a href="#" data-go="mkt">Open map</a></div>
+<div class="map" style="margin-top:12px"><span class="st" style="left:36%;top:14%;color:#f4f1e8">Telangana</span><span class="st" style="left:42%;top:48%">Andhra<br>Pradesh</span><span class="st" style="left:2%;top:50%">Karnataka</span><div class="shade"></div><div class="cap"><em class="serif">1 city</em><span>Every deed transparent<br>&amp; verified</span></div><button data-go="mkt"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/></svg>Explore</button></div>
+<button class="card city" data-t="Vishakhapatnam: 1 property"><svg viewBox="0 0 24 24" style="color:var(--gold)"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/></svg>Vishakhapatnam</button>
+
+<div class="sh"><h2 class="serif">Opus Bloc Blog</h2><a href="#" data-t="All posts">See all</a></div><p class="sub">Stories and updates from the Opus Bloc team.</p>
+<div class="card news"><div class="th"></div><div><div class="mono">Opus Bloc</div><h3 class="serif">Union Budget Capex: The Number That Maps India’s Next Real Estate Boom.</h3><small>india · 30 Oct</small></div></div>
+<div class="card news"><div class="th"></div><div><div class="mono">Opus Bloc</div><h3 class="serif">From Zamindari to ₹10,000: How investing in real estate has changed</h3><small>india · 21 Oct</small></div></div>
+<div class="card news"><div class="th"></div><div><div class="mono">Opus Bloc</div><h3 class="serif">Fractional Real Estate vs. Fixed Deposits (FD) in 2026: Where does ₹50,000 grow more?</h3><small>india · 13 Oct</small></div></div>
+
+<div class="sh" style="margin-top:28px"><h2 class="serif">Real-Estate News</h2><a href="#" data-t="All news">See all</a></div><p class="sub">Market trends, regulation and insight.</p>
+<div class="card news"><div class="th b"></div><div><div class="mono">Business Today</div><h3 class="serif">$4.5 billion investments, 60.7 million sq ft office leasing drive record…</h3><small>india · 5 Nov</small></div></div>
+<div class="card news"><div class="th c"></div><div><div class="mono">Hindustan Times</div><h3 class="serif">NCR accounts for 21.8% of India’s warehousing demand; rents jump…</h3><small>india · 4 Nov</small></div></div>
+<div class="card news"><div class="th"></div><div><div class="mono">ANI (Asian News International)</div><h3 class="serif">NICMAR Unveils New Brand Identity to Align with India’s New…</h3><small>india · 4 Nov</small></div></div>
+<div class="mono" style="text-align:center;color:var(--mut);margin-top:24px">Follow us</div>
+<div class="soc"><button class="sq" data-t="Opens X" aria-label="X">𝕏</button><button class="sq" data-t="Opens LinkedIn" aria-label="LinkedIn"><b>in</b></button><button class="sq" data-t="Opens Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/></svg></button></div>
+</section>
+
+<!-- MARKETS -->
+<section class="scr" id="mkt">
+<div class="mh"><button class="ib" data-go="home" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1 class="serif">Markets</h1></div>
+<div class="seg" id="seg"><button>Pre-Book</button><button class="on">Primary <sup>1</sup></button><button>Secondary</button></div>
+<div class="sr"><label><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Search properties or cities…" aria-label="Search"></label><button class="sq" style="height:58px;width:58px" data-t="Opens filters" aria-label="Filters"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4"/></svg></button></div>
+<div class="chips" id="chips"><button class="chip on">All</button><button class="chip">Residential</button><button class="chip">Commercial</button><button class="chip">Villa</button><button class="chip">Land</button></div>
+<div class="rs"><span id="cnt">1 result</span><button id="sort" data-t="Sorted by newest first">↑↓ Newest First</button></div>
+<div id="res"><div class="prop" id="pc"><div class="hero" style="height:190px"><span class="tg" style="top:14px">HOT</span><div class="logo"><i></i></div><b>OPUS BLOC</b><span class="tg" style="bottom:14px">PRIMARY</span><button class="hr" aria-label="Save"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z"/></svg></button></div>
+<div class="pb"><div class="pt"><b>OB Urban Living PG</b><span class="lnd">LAND</span></div>
+<div class="loc"><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>Vishakhapatnam, Andhra Pradesh</div>
+<div class="m2"><div><div class="mono">Min amount</div><b>₹10.1K</b></div><div><div class="mono">*5Y projected returns</div><b class="g">86%</b></div></div>
+<div class="row" style="margin-top:14px"><button class="sq" data-t="Share link copied" aria-label="Share"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 11 7.6-4M8.2 13l7.6 4"/></svg></button><button class="buy" data-t="Opens purchase flow">Buy now</button></div></div></div></div>
+</section>
+
+<!-- ACTIVITY / PROFILE -->
+<section class="scr" id="act"><div class="mh"><h1 class="serif">Activity</h1></div><div class="emp">No transactions yet.<br>Your purchases and payouts will appear here.</div></section>
+<section class="scr" id="pro"><div class="mh"><h1 class="serif">Profile</h1></div><div class="emp">Account, KYC and bank details live here.</div></section>
+
+<button class="fab" data-t="Ask the Opus Bloc assistant" aria-label="AI assistant"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg></button>
+<div class="toast" id="toast"></div>
+<nav class="nav" id="nav"><button class="on" data-go="home"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/></svg>Home</button><button data-go="mkt"><svg viewBox="0 0 24 24"><path d="M4 21V6l8-3v18M12 9h8v12M7 9h2M7 13h2M15 13h2M15 17h2"/></svg>Market</button><button data-go="act"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg>Activity</button><button data-go="pro"><span class="pa">T</span>Profile</button></nav>
+</div>
+<script>
+var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var tt;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show')},1600)}
+function go(id){$$('.scr').forEach(function(s){s.classList.toggle('on',s.id===id)});var map={home:0,mkt:1,act:2,pro:3};$$('#nav button').forEach(function(b,i){b.classList.toggle('on',i===map[id])});$('#'+id).scrollTop=0;$('.fab').style.display=id==='home'||id==='mkt'?'grid':'none'}
+document.addEventListener('click',function(e){var a=e.target.closest('[data-go]');if(a){e.preventDefault();go(a.getAttribute('data-go'));return}var t=e.target.closest('[data-t]');if(t){e.preventDefault();toast(t.getAttribute('data-t'))}});
+$('#sl').addEventListener('scroll',function(){var i=Math.round(this.scrollLeft/this.clientWidth);$$('#dots i').forEach(function(d,j){d.classList.toggle('on',j===i)})});
+$$('.hr').forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('on');toast(b.classList.contains('on')?'Saved to favourites':'Removed from favourites')})});
+var cat='All',tab=1;
+function filt(){var q=$('#q').value.toLowerCase().trim(),ok=tab===1&&(cat==='All'||cat==='Land')&&(!q||'ob urban living pg vishakhapatnam andhra pradesh land'.indexOf(q)>-1);
+$('#pc').style.display=ok?'block':'none';$('#cnt').textContent=ok?'1 result':'0 results';
+var e=$('#emp');if(!ok&&!e){e=document.createElement('div');e.id='emp';e.className='emp';e.innerHTML='Nothing here yet.<br>Try another tab or category.';$('#res').appendChild(e)}if(ok&&e)e.remove()}
+$$('#seg button').forEach(function(b,i){b.addEventListener('click',function(){$$('#seg button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');tab=i;filt()})});
+$$('#chips .chip').forEach(function(c){c.addEventListener('click',function(){$$('#chips .chip').forEach(function(x){x.classList.remove('on')});c.classList.add('on');cat=c.textContent;filt()})});
+$('#q').addEventListener('input',filt);
+</script>
+</body>
+</html>
